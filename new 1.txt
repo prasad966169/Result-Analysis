@@ -1,0 +1,35 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+def load_data(file_path):
+    """Loads student result data from an Excel/CSV file."""
+    return pd.read_excel(file_path) if file_path.endswith('.xlsx') else pd.read_csv(file_path)
+
+def calculate_pass_rate(df):
+    """Calculates pass rate for each subject in different semesters."""
+    pass_rate = df.groupby(['Semester', 'Subject'])['Pass'].mean() * 100
+    return pass_rate.reset_index()
+
+def plot_pass_rate(pass_rate_df):
+    """Plots the pass rate of subjects across semesters."""
+    plt.figure(figsize=(12, 6))
+    sns.lineplot(data=pass_rate_df, x='Semester', y='Pass', hue='Subject', marker='o')
+    plt.title('Pass Rate Trend by Subject')
+    plt.xlabel('Semester')
+    plt.ylabel('Pass Rate (%)')
+    plt.legend(title='Subject', bbox_to_anchor=(1.05, 1), loc='upper left')
+    plt.grid()
+    plt.show()
+
+def generate_report(pass_rate_df, output_file='Result_Analysis.xlsx'):
+    """Exports the pass rate analysis to an Excel file."""
+    with pd.ExcelWriter(output_file) as writer:
+        pass_rate_df.to_excel(writer, sheet_name='Pass Rate Analysis', index=False)
+    print(f'Report saved as {output_file}')
+
+# Example usage (Replace 'results.xlsx' with actual file path)
+# df = load_data('results.xlsx')
+# pass_rate_df = calculate_pass_rate(df)
+# plot_pass_rate(pass_rate_df)
+# generate_report(pass_rate_df)
